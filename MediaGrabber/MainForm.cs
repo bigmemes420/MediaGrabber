@@ -12,6 +12,22 @@ namespace MediaGrabber
         public MainForm()
         {
             InitializeComponent();
+
+            // Pull the window/taskbar icon from the exe's own icon (set via
+            // ApplicationIcon). Avoids a second copy in the resx and stays correct
+            // under single-file publish, where a loose app.ico isn't deployed.
+            try
+            {
+                var exePath = Environment.ProcessPath;
+                if (exePath is not null)
+                {
+                    Icon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+                }
+            }
+            catch
+            {
+            }
+
             PopulateFormats();
             PopulateQuality();
 
