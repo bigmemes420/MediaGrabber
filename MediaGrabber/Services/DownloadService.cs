@@ -53,8 +53,10 @@ public sealed class DownloadService
         switch (request.Kind)
         {
             case MediaKind.Video:
-            case MediaKind.Both:
                 return await RunPassAsync(ytDlp, BuildVideoArgs(request, ffmpegDir), onOutput, ct);
+
+            case MediaKind.Both:
+                return await RunBothAsync(ytDlp, request, ffmpegDir, onOutput, ct);
 
             case MediaKind.Audio:
                 return await RunPassAsync(ytDlp, BuildAudioArgs(request, ffmpegDir, onOutput), onOutput, ct);
@@ -65,12 +67,12 @@ public sealed class DownloadService
         }
     }
 
-    private static List<string> BuildCommonArgs(DownloadRequest request, string? ffmpegDir)
+    private static List<string> BuildCommonArgs(DownloadRequest request, string? ffmpegDir, string? destFolder = null)
     {
         var args = new List<string>
         {
             "--newline",
-            "-P", request.OutputFolder,
+            "-P", destFolder ?? request.OutputFolder,
             "-o", "%(title)s.%(ext)s",
         };
 
@@ -83,9 +85,9 @@ public sealed class DownloadService
         return args;
     }
 
-    private static List<string> BuildVideoArgs(DownloadRequest request, string? ffmpegDir)
+    private static List<string> BuildVideoArgs(DownloadRequest request, string? ffmpegDir, string? destFolder = null)
     {
-        var args = BuildCommonArgs(request, ffmpegDir);
+        var args = BuildCommonArgs(request, ffmpegDir, destFolder);
 
         args.Add("-f");
         if (string.Equals(request.Quality, "Best", StringComparison.OrdinalIgnoreCase)
@@ -152,6 +154,74 @@ public sealed class DownloadService
 
         return end > 0
             && int.TryParse(value.AsSpan(0, end), NumberStyles.None, CultureInfo.InvariantCulture, out number);
+    }
+
+    // Both stages the download+merge in a "temp" subfolder, then moves the merged
+    // result out to the output folder. Merging directly into the output folder was
+    // causing merge problems, so yt-dlp writes everything into tempDir first.
+    private static async Task<int> RunBothAsync(string ytDlp, DownloadRequest request, string? ffmpegDir, Action<string> onOutput, CancellationToken ct)
+    {
+        var tempDir = Path.Combine(request.OutputFolder, "temp");
+        if (Directory.Exists(tempDir))
+        {
+            try
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                onOutput($"WARNING: failed to clear stale temp folder '{tempDir}': {ex.Message}");
+            }
+        }
+        Directory.CreateDirectory(tempDir);
+
+        try
+        {
+            var exitCode = await RunPassAsync(ytDlp, BuildVideoArgs(request, ffmpegDir, tempDir), onOutput, ct);
+            if (exitCode != 0)
+                return exitCode;
+
+            var wantedExt = "." + request.Format;
+            var moved = 0;
+            try
+            {
+                foreach (var src in Directory.GetFiles(tempDir))
+                {
+                    if (!string.Equals(Path.GetExtension(src), wantedExt, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var name = Path.GetFileName(src);
+                    var dest = Path.Combine(request.OutputFolder, name);
+                    File.Move(src, dest, overwrite: true);
+                    onOutput($"Moved {name} to {request.OutputFolder}.");
+                    moved++;
+                }
+            }
+            catch (Exception ex)
+            {
+                onOutput($"ERROR: failed to move downloaded file out of temp folder: {ex.Message}");
+                return -1;
+            }
+
+            if (moved == 0)
+            {
+                onOutput($"WARNING: no merged '{wantedExt}' file was found in the temp folder; nothing was moved to '{request.OutputFolder}'.");
+                return -1;
+            }
+
+            return exitCode;
+        }
+        finally
+        {
+            try
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                onOutput($"WARNING: failed to clean up temp folder '{tempDir}': {ex.Message}");
+            }
+        }
     }
 
     private static async Task<int> RunPassAsync(string exe, List<string> args, Action<string> onOutput, CancellationToken ct)
