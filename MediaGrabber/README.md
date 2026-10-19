@@ -25,25 +25,29 @@ dotnet build
 dotnet run
 ```
 
-A normal `dotnet build` / Visual Studio F5 produces a framework-dependent build
-(requires the .NET 9 runtime installed), with `MediaGrabber.runtimeconfig.json`
-and `MediaGrabber.deps.json` beside the exe — this is expected for a local build.
+Every build is **self-contained**: a normal `dotnet build` / Visual Studio F5
+bundles the .NET 9 runtime into the output (`win-x64`), so the app runs with no
+installed .NET. A non-bundled build still writes the loose
+`MediaGrabber.runtimeconfig.json` and `MediaGrabber.deps.json` beside the exe
+(unavoidable outside a single-file publish) — this is expected for a local build.
+The output lands under `bin\Debug\net9.0-windows\win-x64\`.
 
 ## Publish
 
 To produce a single, self-contained `MediaGrabber.exe` that needs **no installed
-.NET runtime**:
+.NET runtime**, either run:
 
 ```
 dotnet publish -c Release
 ```
 
-This targets `win-x64` and bundles the .NET runtime and all native/WinForms
+or in Visual Studio → **Publish** using the bundled **FolderProfile** profile
+(`Properties\PublishProfiles\FolderProfile.pubxml`).
+
+Publish targets `win-x64` and bundles the .NET runtime and all native/WinForms
 libraries into one file. `runtimeconfig.json`, `deps.json` and the debug symbols
 are embedded in the exe (not emitted as loose files), so publish produces a
-single `MediaGrabber.exe`. Use `dotnet publish -c Release` for this guaranteed
-single-file output (a custom VS publish profile may override these settings). The
-result is at:
+single `MediaGrabber.exe`. The result is at:
 
 ```
 bin\Release\net9.0-windows\win-x64\publish\MediaGrabber.exe

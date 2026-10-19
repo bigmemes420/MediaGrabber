@@ -6,18 +6,15 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-
-  <!-- Applied only on publish so normal debug build / VS F5 stays framework-dependent.
-       Single-file publish embeds runtimeconfig.json and deps.json into the bundled exe
-       (no loose files), and self-contained bundles the .NET runtime. -->
-  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true' or '$(_IsPublishing)' == 'true'">
+    <!-- Self-contained for every build and publish: a normal `dotnet build` / VS F5
+         bundles the .NET runtime so the app runs with no installed .NET. -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
+    <!-- Inert during `build`; takes effect on `publish` to emit a single self-contained
+         MediaGrabber.exe with runtimeconfig.json, deps.json and symbols embedded. -->
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <!-- Embed symbols so publish emits only MediaGrabber.exe (no loose .pdb). -->
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
