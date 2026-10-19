@@ -71,9 +71,6 @@ namespace MediaGrabber
             tabDownloader.Controls.Add(formatCombo);
             tabDownloader.Controls.Add(qualityLabel);
             tabDownloader.Controls.Add(qualityCombo);
-            tabDownloader.Controls.Add(saveLabel);
-            tabDownloader.Controls.Add(outputFolderTextBox);
-            tabDownloader.Controls.Add(browseButton);
             tabDownloader.Controls.Add(downloadButton);
             tabDownloader.Controls.Add(cancelButton);
             tabDownloader.Controls.Add(logTextBox);
@@ -186,41 +183,12 @@ namespace MediaGrabber
             qualityCombo.Size = new Size(180, 23);
             qualityCombo.TabIndex = 6;
             // 
-            // saveLabel
-            // 
-            saveLabel.AutoSize = true;
-            saveLabel.Location = new Point(12, 202);
-            saveLabel.Name = "saveLabel";
-            saveLabel.Size = new Size(50, 15);
-            saveLabel.TabIndex = 7;
-            saveLabel.Text = "Save to:";
-            // 
-            // outputFolderTextBox
-            // 
-            outputFolderTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            outputFolderTextBox.Location = new Point(66, 199);
-            outputFolderTextBox.Name = "outputFolderTextBox";
-            outputFolderTextBox.ReadOnly = true;
-            outputFolderTextBox.Size = new Size(422, 23);
-            outputFolderTextBox.TabIndex = 8;
-            // 
-            // browseButton
-            // 
-            browseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            browseButton.Location = new Point(496, 198);
-            browseButton.Name = "browseButton";
-            browseButton.Size = new Size(84, 25);
-            browseButton.TabIndex = 9;
-            browseButton.Text = "Browse...";
-            browseButton.UseVisualStyleBackColor = true;
-            browseButton.Click += BrowseButton_Click;
-            // 
             // downloadButton
             // 
-            downloadButton.Location = new Point(12, 236);
+            downloadButton.Location = new Point(12, 200);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new Size(100, 32);
-            downloadButton.TabIndex = 10;
+            downloadButton.TabIndex = 7;
             downloadButton.Text = "Download";
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += DownloadButton_Click;
@@ -228,10 +196,10 @@ namespace MediaGrabber
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new Point(120, 236);
+            cancelButton.Location = new Point(120, 200);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(100, 32);
-            cancelButton.TabIndex = 11;
+            cancelButton.TabIndex = 8;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += CancelButton_Click;
@@ -242,17 +210,20 @@ namespace MediaGrabber
             logTextBox.BackColor = Color.FromArgb(24, 26, 28);
             logTextBox.ForeColor = Color.FromArgb(220, 222, 225);
             logTextBox.Font = new Font("Consolas", 9F);
-            logTextBox.Location = new Point(12, 278);
+            logTextBox.Location = new Point(12, 242);
             logTextBox.Multiline = true;
             logTextBox.Name = "logTextBox";
             logTextBox.ReadOnly = true;
             logTextBox.ScrollBars = ScrollBars.Both;
-            logTextBox.Size = new Size(568, 182);
-            logTextBox.TabIndex = 12;
+            logTextBox.Size = new Size(568, 218);
+            logTextBox.TabIndex = 9;
             logTextBox.WordWrap = false;
             // 
             // tabSettings
             // 
+            tabSettings.Controls.Add(saveLabel);
+            tabSettings.Controls.Add(outputFolderTextBox);
+            tabSettings.Controls.Add(browseButton);
             tabSettings.Controls.Add(ytDlpLabel);
             tabSettings.Controls.Add(ytDlpPathTextBox);
             tabSettings.Controls.Add(ytDlpBrowseButton);
@@ -270,31 +241,60 @@ namespace MediaGrabber
             tabSettings.Text = "Settings";
             tabSettings.UseVisualStyleBackColor = true;
             // 
+            // saveLabel
+            // 
+            saveLabel.AutoSize = true;
+            saveLabel.Location = new Point(12, 15);
+            saveLabel.Name = "saveLabel";
+            saveLabel.Size = new Size(50, 15);
+            saveLabel.TabIndex = 0;
+            saveLabel.Text = "Save to:";
+            // 
+            // outputFolderTextBox
+            // 
+            outputFolderTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            outputFolderTextBox.Location = new Point(12, 36);
+            outputFolderTextBox.Name = "outputFolderTextBox";
+            outputFolderTextBox.ReadOnly = true;
+            outputFolderTextBox.Size = new Size(476, 23);
+            outputFolderTextBox.TabIndex = 1;
+            // 
+            // browseButton
+            // 
+            browseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            browseButton.Location = new Point(496, 35);
+            browseButton.Name = "browseButton";
+            browseButton.Size = new Size(84, 25);
+            browseButton.TabIndex = 2;
+            browseButton.Text = "Browse...";
+            browseButton.UseVisualStyleBackColor = true;
+            browseButton.Click += BrowseButton_Click;
+            // 
             // ytDlpLabel
             // 
             ytDlpLabel.AutoSize = true;
-            ytDlpLabel.Location = new Point(12, 15);
+            ytDlpLabel.Location = new Point(12, 73);
             ytDlpLabel.Name = "ytDlpLabel";
             ytDlpLabel.Size = new Size(66, 15);
-            ytDlpLabel.TabIndex = 0;
+            ytDlpLabel.TabIndex = 3;
             ytDlpLabel.Text = "yt-dlp path:";
             // 
             // ytDlpPathTextBox
             // 
             ytDlpPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ytDlpPathTextBox.Location = new Point(12, 36);
+            ytDlpPathTextBox.Location = new Point(12, 94);
             ytDlpPathTextBox.Name = "ytDlpPathTextBox";
             ytDlpPathTextBox.PlaceholderText = "Leave blank to auto-detect";
             ytDlpPathTextBox.Size = new Size(476, 23);
-            ytDlpPathTextBox.TabIndex = 1;
+            ytDlpPathTextBox.TabIndex = 4;
             // 
             // ytDlpBrowseButton
             // 
             ytDlpBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ytDlpBrowseButton.Location = new Point(496, 35);
+            ytDlpBrowseButton.Location = new Point(496, 93);
             ytDlpBrowseButton.Name = "ytDlpBrowseButton";
             ytDlpBrowseButton.Size = new Size(84, 25);
-            ytDlpBrowseButton.TabIndex = 2;
+            ytDlpBrowseButton.TabIndex = 5;
             ytDlpBrowseButton.Text = "Browse...";
             ytDlpBrowseButton.UseVisualStyleBackColor = true;
             ytDlpBrowseButton.Click += YtDlpBrowseButton_Click;
@@ -302,38 +302,38 @@ namespace MediaGrabber
             // ffmpegLabel
             // 
             ffmpegLabel.AutoSize = true;
-            ffmpegLabel.Location = new Point(12, 73);
+            ffmpegLabel.Location = new Point(12, 131);
             ffmpegLabel.Name = "ffmpegLabel";
             ffmpegLabel.Size = new Size(72, 15);
-            ffmpegLabel.TabIndex = 3;
+            ffmpegLabel.TabIndex = 6;
             ffmpegLabel.Text = "ffmpeg path:";
             // 
             // ffmpegPathTextBox
             // 
             ffmpegPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ffmpegPathTextBox.Location = new Point(12, 94);
+            ffmpegPathTextBox.Location = new Point(12, 152);
             ffmpegPathTextBox.Name = "ffmpegPathTextBox";
             ffmpegPathTextBox.PlaceholderText = "Leave blank to auto-detect";
             ffmpegPathTextBox.Size = new Size(476, 23);
-            ffmpegPathTextBox.TabIndex = 4;
+            ffmpegPathTextBox.TabIndex = 7;
             // 
             // ffmpegBrowseButton
             // 
             ffmpegBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ffmpegBrowseButton.Location = new Point(496, 93);
+            ffmpegBrowseButton.Location = new Point(496, 151);
             ffmpegBrowseButton.Name = "ffmpegBrowseButton";
             ffmpegBrowseButton.Size = new Size(84, 25);
-            ffmpegBrowseButton.TabIndex = 5;
+            ffmpegBrowseButton.TabIndex = 8;
             ffmpegBrowseButton.Text = "Browse...";
             ffmpegBrowseButton.UseVisualStyleBackColor = true;
             ffmpegBrowseButton.Click += FfmpegBrowseButton_Click;
             // 
             // saveSettingsButton
             // 
-            saveSettingsButton.Location = new Point(12, 134);
+            saveSettingsButton.Location = new Point(12, 192);
             saveSettingsButton.Name = "saveSettingsButton";
             saveSettingsButton.Size = new Size(100, 32);
-            saveSettingsButton.TabIndex = 6;
+            saveSettingsButton.TabIndex = 9;
             saveSettingsButton.Text = "Save";
             saveSettingsButton.UseVisualStyleBackColor = true;
             saveSettingsButton.Click += SaveSettingsButton_Click;
@@ -341,19 +341,19 @@ namespace MediaGrabber
             // settingsStatusLabel
             // 
             settingsStatusLabel.AutoSize = true;
-            settingsStatusLabel.Location = new Point(120, 142);
+            settingsStatusLabel.Location = new Point(120, 200);
             settingsStatusLabel.Name = "settingsStatusLabel";
             settingsStatusLabel.Size = new Size(0, 15);
-            settingsStatusLabel.TabIndex = 7;
+            settingsStatusLabel.TabIndex = 10;
             // 
             // settingsHelpLabel
             // 
             settingsHelpLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             settingsHelpLabel.ForeColor = SystemColors.GrayText;
-            settingsHelpLabel.Location = new Point(12, 184);
+            settingsHelpLabel.Location = new Point(12, 242);
             settingsHelpLabel.Name = "settingsHelpLabel";
             settingsHelpLabel.Size = new Size(568, 60);
-            settingsHelpLabel.TabIndex = 8;
+            settingsHelpLabel.TabIndex = 11;
             settingsHelpLabel.Text = "These paths override auto-detection. Leave a box blank to search PATH and the application folder for the tool.";
             // 
             // MainForm

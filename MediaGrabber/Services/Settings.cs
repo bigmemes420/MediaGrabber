@@ -11,6 +11,7 @@ public sealed class AppSettings
 {
     public string? YtDlpPath { get; set; }
     public string? FfmpegPath { get; set; }
+    public string? OutputFolder { get; set; }
 }
 
 public static class SettingsStore

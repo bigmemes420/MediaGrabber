@@ -12,14 +12,15 @@ namespace MediaGrabber
         public MainForm()
         {
             InitializeComponent();
-            outputFolderTextBox.Text = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             PopulateFormats();
             PopulateQuality();
 
             var settings = SettingsStore.Load();
             ytDlpPathTextBox.Text = settings.YtDlpPath ?? "";
             ffmpegPathTextBox.Text = settings.FfmpegPath ?? "";
+            outputFolderTextBox.Text = string.IsNullOrWhiteSpace(settings.OutputFolder)
+                ? DefaultOutputFolder()
+                : settings.OutputFolder;
 
             Shown += (_, _) => ReportTools();
         }
@@ -133,6 +134,7 @@ namespace MediaGrabber
             {
                 YtDlpPath = NullIfBlank(ytDlpPathTextBox.Text),
                 FfmpegPath = NullIfBlank(ffmpegPathTextBox.Text),
+                OutputFolder = NullIfBlank(outputFolderTextBox.Text),
             };
 
             try
@@ -155,6 +157,9 @@ namespace MediaGrabber
             return trimmed.Length == 0 ? null : trimmed;
         }
 
+        private static string DefaultOutputFolder() => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
         private async void DownloadButton_Click(object? sender, EventArgs e)
         {
             var url = urlTextBox.Text.Trim();
@@ -172,7 +177,7 @@ namespace MediaGrabber
                 Kind = CurrentKind(),
                 Format = (string)formatCombo.SelectedItem!,
                 Quality = (string)qualityCombo.SelectedItem!,
-                OutputFolder = outputFolderTextBox.Text,
+                OutputFolder = NullIfBlank(outputFolderTextBox.Text) ?? DefaultOutputFolder(),
             };
 
             _cts = new CancellationTokenSource();
