@@ -1,0 +1,17 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# Rider
+.idea/
+
+# External tools dropped next to the app
+yt-dlp.exe
+ffmpeg.exe
+ffprobe.exe
