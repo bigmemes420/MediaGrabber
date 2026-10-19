@@ -6,15 +6,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Self-contained for every build and publish: a normal `dotnet build` / VS F5
-         bundles the .NET runtime so the app runs with no installed .NET. -->
+    <!-- Framework-dependent: the .NET 9 Desktop Runtime must be installed on the
+         host. A RID is still required for a single-file publish; SelfContained is
+         set false explicitly so the RID doesn't make the SDK default to (or warn
+         about) a self-contained build. -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>true</SelfContained>
-    <!-- Inert during `build`; takes effect on `publish` to emit a single self-contained
-         MediaGrabber.exe with runtimeconfig.json, deps.json and symbols embedded. -->
+    <SelfContained>false</SelfContained>
+    <!-- Inert during `build`; takes effect on `publish` to emit a single
+         framework-dependent MediaGrabber.exe with the app dll, runtimeconfig.json,
+         deps.json and symbols embedded (but not the runtime). -->
     <PublishSingleFile>true</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 

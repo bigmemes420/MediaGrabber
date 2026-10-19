@@ -7,7 +7,10 @@ pick a format, and download.
 
 ## Requirements
 
-- .NET 9 SDK (targets `net9.0-windows`).
+- .NET 9 SDK to build (targets `net9.0-windows`).
+- The app is **framework-dependent**: the host must have the
+  [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
+  installed to run it. The runtime is **not** bundled.
 - `yt-dlp.exe` and `ffmpeg.exe` must be available either:
   - on your `PATH`, or
   - dropped in the same folder as `MediaGrabber.exe`.
@@ -25,17 +28,15 @@ dotnet build
 dotnet run
 ```
 
-Every build is **self-contained**: a normal `dotnet build` / Visual Studio F5
-bundles the .NET 9 runtime into the output (`win-x64`), so the app runs with no
-installed .NET. A non-bundled build still writes the loose
-`MediaGrabber.runtimeconfig.json` and `MediaGrabber.deps.json` beside the exe
-(unavoidable outside a single-file publish) — this is expected for a local build.
-The output lands under `bin\Debug\net9.0-windows\win-x64\`.
+A normal `dotnet build` produces the app dll plus an `MediaGrabber.exe` launcher
+and the loose `MediaGrabber.runtimeconfig.json` and `MediaGrabber.deps.json`
+beside them (normal for a non-single-file build). The runtime is not copied —
+the installed .NET 9 Desktop Runtime is used. The output lands under
+`bin\Debug\net9.0-windows\win-x64\`.
 
 ## Publish
 
-To produce a single, self-contained `MediaGrabber.exe` that needs **no installed
-.NET runtime**, either run:
+To produce a single framework-dependent `MediaGrabber.exe`, either run:
 
 ```
 dotnet publish -c Release
@@ -44,10 +45,10 @@ dotnet publish -c Release
 or in Visual Studio → **Publish** using the bundled **FolderProfile** profile
 (`Properties\PublishProfiles\FolderProfile.pubxml`).
 
-Publish targets `win-x64` and bundles the .NET runtime and all native/WinForms
-libraries into one file. `runtimeconfig.json`, `deps.json` and the debug symbols
-are embedded in the exe (not emitted as loose files), so publish produces a
-single `MediaGrabber.exe`. The result is at:
+Publish targets `win-x64` and embeds the app dll, `runtimeconfig.json`,
+`deps.json` and the debug symbols into one `MediaGrabber.exe`. The .NET runtime
+is **not** bundled, so the exe is small (a few MB) and requires the .NET 9
+Desktop Runtime on the host. The result is at:
 
 ```
 bin\Release\net9.0-windows\win-x64\publish\MediaGrabber.exe
