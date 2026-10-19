@@ -19,14 +19,16 @@ public sealed class DownloadService
 
     public async Task<int> RunAsync(DownloadRequest request, Action<string> onOutput, CancellationToken ct)
     {
-        var ytDlp = ToolLocator.FindYtDlp();
+        var settings = SettingsStore.Load();
+
+        var ytDlp = ToolLocator.FindYtDlp(settings.YtDlpPath);
         if (ytDlp is null)
         {
             onOutput("ERROR: yt-dlp was not found. Put yt-dlp.exe next to MediaGrabber.exe or on your PATH.");
             return -1;
         }
 
-        var ffmpeg = ToolLocator.FindFfmpeg();
+        var ffmpeg = ToolLocator.FindFfmpeg(settings.FfmpegPath);
         var ffmpegDir = ffmpeg is null ? null : Path.GetDirectoryName(ffmpeg);
 
         if (ffmpeg is null)

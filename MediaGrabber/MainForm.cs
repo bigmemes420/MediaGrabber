@@ -13,13 +13,19 @@ namespace MediaGrabber
             outputFolderTextBox.Text = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             PopulateFormats();
+
+            var settings = SettingsStore.Load();
+            ytDlpPathTextBox.Text = settings.YtDlpPath ?? "";
+            ffmpegPathTextBox.Text = settings.FfmpegPath ?? "";
+
             Shown += (_, _) => ReportTools();
         }
 
         private void ReportTools()
         {
-            var ytDlp = ToolLocator.FindYtDlp();
-            var ffmpeg = ToolLocator.FindFfmpeg();
+            var settings = SettingsStore.Load();
+            var ytDlp = ToolLocator.FindYtDlp(settings.YtDlpPath);
+            var ffmpeg = ToolLocator.FindFfmpeg(settings.FfmpegPath);
             AppendLog(ytDlp != null ? $"yt-dlp found: {ytDlp}" : "yt-dlp not found. Install it or put it on PATH.");
             AppendLog(ffmpeg != null ? $"ffmpeg found: {ffmpeg}" : "ffmpeg not found. Install it or put it on PATH.");
         }
@@ -75,6 +81,64 @@ namespace MediaGrabber
             {
                 outputFolderTextBox.Text = dialog.SelectedPath;
             }
+        }
+
+        private void YtDlpBrowseButton_Click(object? sender, EventArgs e)
+        {
+            BrowseForExecutable(ytDlpPathTextBox);
+        }
+
+        private void FfmpegBrowseButton_Click(object? sender, EventArgs e)
+        {
+            BrowseForExecutable(ffmpegPathTextBox);
+        }
+
+        private void BrowseForExecutable(TextBox target)
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Filter = "Executables (*.exe)|*.exe|All files (*.*)|*.*",
+                CheckFileExists = true,
+            };
+
+            if (File.Exists(target.Text))
+            {
+                dialog.InitialDirectory = Path.GetDirectoryName(target.Text);
+                dialog.FileName = Path.GetFileName(target.Text);
+            }
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                target.Text = dialog.FileName;
+            }
+        }
+
+        private void SaveSettingsButton_Click(object? sender, EventArgs e)
+        {
+            var settings = new AppSettings
+            {
+                YtDlpPath = NullIfBlank(ytDlpPathTextBox.Text),
+                FfmpegPath = NullIfBlank(ffmpegPathTextBox.Text),
+            };
+
+            try
+            {
+                SettingsStore.Save(settings);
+                settingsStatusLabel.ForeColor = SystemColors.ControlText;
+                settingsStatusLabel.Text = "Saved.";
+                ReportTools();
+            }
+            catch (Exception ex)
+            {
+                settingsStatusLabel.ForeColor = Color.Firebrick;
+                settingsStatusLabel.Text = ex.Message;
+            }
+        }
+
+        private static string? NullIfBlank(string value)
+        {
+            var trimmed = value.Trim();
+            return trimmed.Length == 0 ? null : trimmed;
         }
 
         private async void DownloadButton_Click(object? sender, EventArgs e)

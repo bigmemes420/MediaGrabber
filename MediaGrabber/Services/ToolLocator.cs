@@ -10,9 +10,18 @@ namespace MediaGrabber;
 /// </summary>
 public static class ToolLocator
 {
-    public static string? FindYtDlp() => Find("yt-dlp");
+    public static string? FindYtDlp() => FindYtDlp(null);
 
-    public static string? FindFfmpeg() => Find("ffmpeg");
+    public static string? FindFfmpeg() => FindFfmpeg(null);
+
+    public static string? FindYtDlp(string? preferred) => Prefer(preferred) ?? Find("yt-dlp");
+
+    public static string? FindFfmpeg(string? preferred) => Prefer(preferred) ?? Find("ffmpeg");
+
+    private static string? Prefer(string? preferred) =>
+        !string.IsNullOrWhiteSpace(preferred) && File.Exists(preferred)
+            ? Path.GetFullPath(preferred)
+            : null;
 
     private static string? Find(string name)
     {

@@ -17,6 +17,9 @@ namespace MediaGrabber
 
         private void InitializeComponent()
         {
+            tabControl = new TabControl();
+            tabDownloader = new TabPage();
+            tabSettings = new TabPage();
             urlLabel = new Label();
             urlTextBox = new TextBox();
             typeGroupBox = new GroupBox();
@@ -31,8 +34,52 @@ namespace MediaGrabber
             downloadButton = new Button();
             cancelButton = new Button();
             logTextBox = new TextBox();
+            ytDlpLabel = new Label();
+            ytDlpPathTextBox = new TextBox();
+            ytDlpBrowseButton = new Button();
+            ffmpegLabel = new Label();
+            ffmpegPathTextBox = new TextBox();
+            ffmpegBrowseButton = new Button();
+            saveSettingsButton = new Button();
+            settingsStatusLabel = new Label();
+            settingsHelpLabel = new Label();
+            tabControl.SuspendLayout();
+            tabDownloader.SuspendLayout();
+            tabSettings.SuspendLayout();
             typeGroupBox.SuspendLayout();
             SuspendLayout();
+            // 
+            // tabControl
+            // 
+            tabControl.Controls.Add(tabDownloader);
+            tabControl.Controls.Add(tabSettings);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Location = new Point(0, 0);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(600, 500);
+            tabControl.TabIndex = 0;
+            // 
+            // tabDownloader
+            // 
+            tabDownloader.Controls.Add(urlLabel);
+            tabDownloader.Controls.Add(urlTextBox);
+            tabDownloader.Controls.Add(typeGroupBox);
+            tabDownloader.Controls.Add(formatLabel);
+            tabDownloader.Controls.Add(formatCombo);
+            tabDownloader.Controls.Add(saveLabel);
+            tabDownloader.Controls.Add(outputFolderTextBox);
+            tabDownloader.Controls.Add(browseButton);
+            tabDownloader.Controls.Add(downloadButton);
+            tabDownloader.Controls.Add(cancelButton);
+            tabDownloader.Controls.Add(logTextBox);
+            tabDownloader.Location = new Point(4, 24);
+            tabDownloader.Name = "tabDownloader";
+            tabDownloader.Padding = new Padding(3);
+            tabDownloader.Size = new Size(592, 472);
+            tabDownloader.TabIndex = 0;
+            tabDownloader.Text = "Downloader";
+            tabDownloader.UseVisualStyleBackColor = true;
             // 
             // urlLabel
             // 
@@ -49,7 +96,7 @@ namespace MediaGrabber
             urlTextBox.Location = new Point(12, 30);
             urlTextBox.Name = "urlTextBox";
             urlTextBox.PlaceholderText = "https://...";
-            urlTextBox.Size = new Size(520, 23);
+            urlTextBox.Size = new Size(568, 23);
             urlTextBox.TabIndex = 1;
             // 
             // typeGroupBox
@@ -59,7 +106,7 @@ namespace MediaGrabber
             typeGroupBox.Controls.Add(bothRadio);
             typeGroupBox.Location = new Point(12, 64);
             typeGroupBox.Name = "typeGroupBox";
-            typeGroupBox.Size = new Size(520, 54);
+            typeGroupBox.Size = new Size(568, 54);
             typeGroupBox.TabIndex = 2;
             typeGroupBox.TabStop = false;
             typeGroupBox.Text = "Type";
@@ -132,13 +179,13 @@ namespace MediaGrabber
             outputFolderTextBox.Location = new Point(66, 165);
             outputFolderTextBox.Name = "outputFolderTextBox";
             outputFolderTextBox.ReadOnly = true;
-            outputFolderTextBox.Size = new Size(374, 23);
+            outputFolderTextBox.Size = new Size(422, 23);
             outputFolderTextBox.TabIndex = 6;
             // 
             // browseButton
             // 
             browseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            browseButton.Location = new Point(448, 164);
+            browseButton.Location = new Point(496, 164);
             browseButton.Name = "browseButton";
             browseButton.Size = new Size(84, 25);
             browseButton.TabIndex = 7;
@@ -178,38 +225,140 @@ namespace MediaGrabber
             logTextBox.Name = "logTextBox";
             logTextBox.ReadOnly = true;
             logTextBox.ScrollBars = ScrollBars.Both;
-            logTextBox.Size = new Size(520, 185);
+            logTextBox.Size = new Size(568, 216);
             logTextBox.TabIndex = 10;
             logTextBox.WordWrap = false;
+            // 
+            // tabSettings
+            // 
+            tabSettings.Controls.Add(ytDlpLabel);
+            tabSettings.Controls.Add(ytDlpPathTextBox);
+            tabSettings.Controls.Add(ytDlpBrowseButton);
+            tabSettings.Controls.Add(ffmpegLabel);
+            tabSettings.Controls.Add(ffmpegPathTextBox);
+            tabSettings.Controls.Add(ffmpegBrowseButton);
+            tabSettings.Controls.Add(saveSettingsButton);
+            tabSettings.Controls.Add(settingsStatusLabel);
+            tabSettings.Controls.Add(settingsHelpLabel);
+            tabSettings.Location = new Point(4, 24);
+            tabSettings.Name = "tabSettings";
+            tabSettings.Padding = new Padding(3);
+            tabSettings.Size = new Size(592, 472);
+            tabSettings.TabIndex = 1;
+            tabSettings.Text = "Settings";
+            tabSettings.UseVisualStyleBackColor = true;
+            // 
+            // ytDlpLabel
+            // 
+            ytDlpLabel.AutoSize = true;
+            ytDlpLabel.Location = new Point(12, 15);
+            ytDlpLabel.Name = "ytDlpLabel";
+            ytDlpLabel.Size = new Size(66, 15);
+            ytDlpLabel.TabIndex = 0;
+            ytDlpLabel.Text = "yt-dlp path:";
+            // 
+            // ytDlpPathTextBox
+            // 
+            ytDlpPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ytDlpPathTextBox.Location = new Point(12, 36);
+            ytDlpPathTextBox.Name = "ytDlpPathTextBox";
+            ytDlpPathTextBox.PlaceholderText = "Leave blank to auto-detect";
+            ytDlpPathTextBox.Size = new Size(476, 23);
+            ytDlpPathTextBox.TabIndex = 1;
+            // 
+            // ytDlpBrowseButton
+            // 
+            ytDlpBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ytDlpBrowseButton.Location = new Point(496, 35);
+            ytDlpBrowseButton.Name = "ytDlpBrowseButton";
+            ytDlpBrowseButton.Size = new Size(84, 25);
+            ytDlpBrowseButton.TabIndex = 2;
+            ytDlpBrowseButton.Text = "Browse...";
+            ytDlpBrowseButton.UseVisualStyleBackColor = true;
+            ytDlpBrowseButton.Click += YtDlpBrowseButton_Click;
+            // 
+            // ffmpegLabel
+            // 
+            ffmpegLabel.AutoSize = true;
+            ffmpegLabel.Location = new Point(12, 73);
+            ffmpegLabel.Name = "ffmpegLabel";
+            ffmpegLabel.Size = new Size(72, 15);
+            ffmpegLabel.TabIndex = 3;
+            ffmpegLabel.Text = "ffmpeg path:";
+            // 
+            // ffmpegPathTextBox
+            // 
+            ffmpegPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ffmpegPathTextBox.Location = new Point(12, 94);
+            ffmpegPathTextBox.Name = "ffmpegPathTextBox";
+            ffmpegPathTextBox.PlaceholderText = "Leave blank to auto-detect";
+            ffmpegPathTextBox.Size = new Size(476, 23);
+            ffmpegPathTextBox.TabIndex = 4;
+            // 
+            // ffmpegBrowseButton
+            // 
+            ffmpegBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ffmpegBrowseButton.Location = new Point(496, 93);
+            ffmpegBrowseButton.Name = "ffmpegBrowseButton";
+            ffmpegBrowseButton.Size = new Size(84, 25);
+            ffmpegBrowseButton.TabIndex = 5;
+            ffmpegBrowseButton.Text = "Browse...";
+            ffmpegBrowseButton.UseVisualStyleBackColor = true;
+            ffmpegBrowseButton.Click += FfmpegBrowseButton_Click;
+            // 
+            // saveSettingsButton
+            // 
+            saveSettingsButton.Location = new Point(12, 134);
+            saveSettingsButton.Name = "saveSettingsButton";
+            saveSettingsButton.Size = new Size(100, 32);
+            saveSettingsButton.TabIndex = 6;
+            saveSettingsButton.Text = "Save";
+            saveSettingsButton.UseVisualStyleBackColor = true;
+            saveSettingsButton.Click += SaveSettingsButton_Click;
+            // 
+            // settingsStatusLabel
+            // 
+            settingsStatusLabel.AutoSize = true;
+            settingsStatusLabel.Location = new Point(120, 142);
+            settingsStatusLabel.Name = "settingsStatusLabel";
+            settingsStatusLabel.Size = new Size(0, 15);
+            settingsStatusLabel.TabIndex = 7;
+            // 
+            // settingsHelpLabel
+            // 
+            settingsHelpLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            settingsHelpLabel.ForeColor = SystemColors.GrayText;
+            settingsHelpLabel.Location = new Point(12, 184);
+            settingsHelpLabel.Name = "settingsHelpLabel";
+            settingsHelpLabel.Size = new Size(568, 60);
+            settingsHelpLabel.TabIndex = 8;
+            settingsHelpLabel.Text = "These paths override auto-detection. Leave a box blank to search PATH and the application folder for the tool.";
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(544, 441);
-            Controls.Add(logTextBox);
-            Controls.Add(cancelButton);
-            Controls.Add(downloadButton);
-            Controls.Add(browseButton);
-            Controls.Add(outputFolderTextBox);
-            Controls.Add(saveLabel);
-            Controls.Add(formatCombo);
-            Controls.Add(formatLabel);
-            Controls.Add(typeGroupBox);
-            Controls.Add(urlTextBox);
-            Controls.Add(urlLabel);
-            MinimumSize = new Size(440, 360);
+            ClientSize = new Size(600, 500);
+            Controls.Add(tabControl);
+            MinimumSize = new Size(480, 420);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MediaGrabber \u2014 yt-dlp + ffmpeg";
+            tabControl.ResumeLayout(false);
+            tabDownloader.ResumeLayout(false);
+            tabDownloader.PerformLayout();
+            tabSettings.ResumeLayout(false);
+            tabSettings.PerformLayout();
             typeGroupBox.ResumeLayout(false);
             typeGroupBox.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
+        private TabControl tabControl;
+        private TabPage tabDownloader;
+        private TabPage tabSettings;
         private Label urlLabel;
         private TextBox urlTextBox;
         private GroupBox typeGroupBox;
@@ -224,5 +373,14 @@ namespace MediaGrabber
         private Button downloadButton;
         private Button cancelButton;
         private TextBox logTextBox;
+        private Label ytDlpLabel;
+        private TextBox ytDlpPathTextBox;
+        private Button ytDlpBrowseButton;
+        private Label ffmpegLabel;
+        private TextBox ffmpegPathTextBox;
+        private Button ffmpegBrowseButton;
+        private Button saveSettingsButton;
+        private Label settingsStatusLabel;
+        private Label settingsHelpLabel;
     }
 }
