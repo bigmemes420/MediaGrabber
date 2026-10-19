@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,10 +14,6 @@ namespace MediaGrabber;
 /// </summary>
 public sealed class DownloadService
 {
-    // Sensible default when Kind==Both, since Format then holds the video
-    // container and we still need an audio codec for the extracted track.
-    private const string BothAudioFormat = "m4a";
-
     public async Task<int> RunAsync(DownloadRequest request, Action<string> onOutput, CancellationToken ct)
     {
         var settings = SettingsStore.Load();
@@ -33,13 +30,20 @@ public sealed class DownloadService
 
         if (ffmpeg is null)
         {
-            var message = request.Kind == MediaKind.Video
-                ? "WARNING: ffmpeg was not found. Merging separate video+audio streams needs ffmpeg; the download may fail or fall back to a single pre-merged stream."
-                : "ERROR: ffmpeg was not found. Extracting audio needs ffmpeg. Put ffmpeg.exe next to MediaGrabber.exe or on your PATH.";
-            onOutput(message);
-
-            if (request.Kind != MediaKind.Video)
+            // ffmpeg is mandatory for Audio (extraction) and Both (guaranteed
+            // merge into one file); for plain Video it is only a warning.
+            if (request.Kind == MediaKind.Video)
+            {
+                onOutput("WARNING: ffmpeg was not found. Merging separate video+audio streams needs ffmpeg; the download may fail or fall back to a single pre-merged stream.");
+            }
+            else
+            {
+                var need = request.Kind == MediaKind.Audio
+                    ? "Extracting audio needs ffmpeg."
+                    : "Merging video+audio into one file needs ffmpeg.";
+                onOutput($"ERROR: ffmpeg was not found. {need} Put ffmpeg.exe next to MediaGrabber.exe or on your PATH.");
                 return -1;
+            }
         }
 
         onOutput($"Using yt-dlp: {ytDlp}");
@@ -49,29 +53,11 @@ public sealed class DownloadService
         switch (request.Kind)
         {
             case MediaKind.Video:
+            case MediaKind.Both:
                 return await RunPassAsync(ytDlp, BuildVideoArgs(request, ffmpegDir), onOutput, ct);
 
             case MediaKind.Audio:
-                return await RunPassAsync(ytDlp, BuildAudioArgs(request, ffmpegDir, request.Format), onOutput, ct);
-
-            case MediaKind.Both:
-            {
-                onOutput("--- Pass 1/2: video ---");
-                var videoCode = await RunPassAsync(ytDlp, BuildVideoArgs(request, ffmpegDir), onOutput, ct);
-
-                ct.ThrowIfCancellationRequested();
-
-                if (videoCode != 0)
-                {
-                    onOutput($"Video pass failed (exit code {videoCode}); skipping audio pass.");
-                    return videoCode;
-                }
-
-                onOutput("--- Pass 2/2: audio ---");
-                var audioCode = await RunPassAsync(ytDlp, BuildAudioArgs(request, ffmpegDir, BothAudioFormat), onOutput, ct);
-
-                return videoCode != 0 ? videoCode : audioCode;
-            }
+                return await RunPassAsync(ytDlp, BuildAudioArgs(request, ffmpegDir, onOutput), onOutput, ct);
 
             default:
                 onOutput($"ERROR: unknown media kind '{request.Kind}'.");
@@ -100,24 +86,72 @@ public sealed class DownloadService
     private static List<string> BuildVideoArgs(DownloadRequest request, string? ffmpegDir)
     {
         var args = BuildCommonArgs(request, ffmpegDir);
+
         args.Add("-f");
-        args.Add("bv*+ba/b");
+        if (string.Equals(request.Quality, "Best", StringComparison.OrdinalIgnoreCase)
+            || !TryParseLeadingDigits(request.Quality, out var height))
+        {
+            args.Add("bv*+ba/b");
+        }
+        else
+        {
+            args.Add($"bv*[height<={height}]+ba/b[height<={height}]");
+        }
+
         args.Add("--merge-output-format");
         args.Add(request.Format);
         args.Add(request.Url);
         return args;
     }
 
-    private static List<string> BuildAudioArgs(DownloadRequest request, string? ffmpegDir, string audioFormat)
+    private static readonly HashSet<string> LosslessFormats =
+        new(StringComparer.OrdinalIgnoreCase) { "wav", "flac" };
+
+    private static List<string> BuildAudioArgs(DownloadRequest request, string? ffmpegDir, Action<string> onOutput)
     {
         var args = BuildCommonArgs(request, ffmpegDir);
+
+        var lossless = string.Equals(request.Quality, "Lossless", StringComparison.OrdinalIgnoreCase);
+        var audioFormat = request.Format;
+        if (lossless && !LosslessFormats.Contains(request.Format))
+        {
+            audioFormat = "flac";
+            onOutput($"Lossless selected; encoding to FLAC instead of {request.Format}.");
+        }
+
+        string audioQuality;
+        if (lossless
+            || string.Equals(request.Quality, "Best", StringComparison.OrdinalIgnoreCase)
+            || !TryParseLeadingDigits(request.Quality, out var bitrate))
+        {
+            audioQuality = "0";
+        }
+        else
+        {
+            audioQuality = $"{bitrate}K";
+        }
+
         args.Add("-x");
         args.Add("--audio-format");
         args.Add(audioFormat);
         args.Add("--audio-quality");
-        args.Add("0");
+        args.Add(audioQuality);
         args.Add(request.Url);
         return args;
+    }
+
+    private static bool TryParseLeadingDigits(string? value, out int number)
+    {
+        number = 0;
+        if (string.IsNullOrEmpty(value))
+            return false;
+
+        var end = 0;
+        while (end < value.Length && char.IsAsciiDigit(value[end]))
+            end++;
+
+        return end > 0
+            && int.TryParse(value.AsSpan(0, end), NumberStyles.None, CultureInfo.InvariantCulture, out number);
     }
 
     private static async Task<int> RunPassAsync(string exe, List<string> args, Action<string> onOutput, CancellationToken ct)

@@ -28,6 +28,8 @@ namespace MediaGrabber
             bothRadio = new RadioButton();
             formatLabel = new Label();
             formatCombo = new ComboBox();
+            qualityLabel = new Label();
+            qualityCombo = new ComboBox();
             saveLabel = new Label();
             outputFolderTextBox = new TextBox();
             browseButton = new Button();
@@ -67,6 +69,8 @@ namespace MediaGrabber
             tabDownloader.Controls.Add(typeGroupBox);
             tabDownloader.Controls.Add(formatLabel);
             tabDownloader.Controls.Add(formatCombo);
+            tabDownloader.Controls.Add(qualityLabel);
+            tabDownloader.Controls.Add(qualityCombo);
             tabDownloader.Controls.Add(saveLabel);
             tabDownloader.Controls.Add(outputFolderTextBox);
             tabDownloader.Controls.Add(browseButton);
@@ -164,41 +168,59 @@ namespace MediaGrabber
             formatCombo.Size = new Size(180, 23);
             formatCombo.TabIndex = 4;
             // 
+            // qualityLabel
+            // 
+            qualityLabel.AutoSize = true;
+            qualityLabel.Location = new Point(12, 168);
+            qualityLabel.Name = "qualityLabel";
+            qualityLabel.Size = new Size(50, 15);
+            qualityLabel.TabIndex = 5;
+            qualityLabel.Text = "Quality:";
+            // 
+            // qualityCombo
+            // 
+            qualityCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            qualityCombo.FormattingEnabled = true;
+            qualityCombo.Location = new Point(66, 165);
+            qualityCombo.Name = "qualityCombo";
+            qualityCombo.Size = new Size(180, 23);
+            qualityCombo.TabIndex = 6;
+            // 
             // saveLabel
             // 
             saveLabel.AutoSize = true;
-            saveLabel.Location = new Point(12, 168);
+            saveLabel.Location = new Point(12, 202);
             saveLabel.Name = "saveLabel";
             saveLabel.Size = new Size(50, 15);
-            saveLabel.TabIndex = 5;
+            saveLabel.TabIndex = 7;
             saveLabel.Text = "Save to:";
             // 
             // outputFolderTextBox
             // 
             outputFolderTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            outputFolderTextBox.Location = new Point(66, 165);
+            outputFolderTextBox.Location = new Point(66, 199);
             outputFolderTextBox.Name = "outputFolderTextBox";
             outputFolderTextBox.ReadOnly = true;
             outputFolderTextBox.Size = new Size(422, 23);
-            outputFolderTextBox.TabIndex = 6;
+            outputFolderTextBox.TabIndex = 8;
             // 
             // browseButton
             // 
             browseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            browseButton.Location = new Point(496, 164);
+            browseButton.Location = new Point(496, 198);
             browseButton.Name = "browseButton";
             browseButton.Size = new Size(84, 25);
-            browseButton.TabIndex = 7;
+            browseButton.TabIndex = 9;
             browseButton.Text = "Browse...";
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += BrowseButton_Click;
             // 
             // downloadButton
             // 
-            downloadButton.Location = new Point(12, 202);
+            downloadButton.Location = new Point(12, 236);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new Size(100, 32);
-            downloadButton.TabIndex = 8;
+            downloadButton.TabIndex = 10;
             downloadButton.Text = "Download";
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += DownloadButton_Click;
@@ -206,10 +228,10 @@ namespace MediaGrabber
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new Point(120, 202);
+            cancelButton.Location = new Point(120, 236);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(100, 32);
-            cancelButton.TabIndex = 9;
+            cancelButton.TabIndex = 11;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += CancelButton_Click;
@@ -220,13 +242,13 @@ namespace MediaGrabber
             logTextBox.BackColor = Color.FromArgb(24, 26, 28);
             logTextBox.ForeColor = Color.FromArgb(220, 222, 225);
             logTextBox.Font = new Font("Consolas", 9F);
-            logTextBox.Location = new Point(12, 244);
+            logTextBox.Location = new Point(12, 278);
             logTextBox.Multiline = true;
             logTextBox.Name = "logTextBox";
             logTextBox.ReadOnly = true;
             logTextBox.ScrollBars = ScrollBars.Both;
-            logTextBox.Size = new Size(568, 216);
-            logTextBox.TabIndex = 10;
+            logTextBox.Size = new Size(568, 182);
+            logTextBox.TabIndex = 12;
             logTextBox.WordWrap = false;
             // 
             // tabSettings
@@ -367,6 +389,8 @@ namespace MediaGrabber
         private RadioButton bothRadio;
         private Label formatLabel;
         private ComboBox formatCombo;
+        private Label qualityLabel;
+        private ComboBox qualityCombo;
         private Label saveLabel;
         private TextBox outputFolderTextBox;
         private Button browseButton;

@@ -4,6 +4,8 @@ namespace MediaGrabber
     {
         private static readonly string[] VideoFormats = { "mp4", "mkv", "webm" };
         private static readonly string[] AudioFormats = { "mp3", "m4a", "wav", "opus", "flac" };
+        private static readonly string[] VideoQualities = { "Best", "2160p", "1440p", "1080p", "720p", "480p" };
+        private static readonly string[] AudioQualities = { "Best", "Lossless", "320k", "256k", "192k", "128k" };
 
         private CancellationTokenSource? _cts;
 
@@ -13,6 +15,7 @@ namespace MediaGrabber
             outputFolderTextBox.Text = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             PopulateFormats();
+            PopulateQuality();
 
             var settings = SettingsStore.Load();
             ytDlpPathTextBox.Text = settings.YtDlpPath ?? "";
@@ -51,6 +54,7 @@ namespace MediaGrabber
             if (sender is RadioButton { Checked: true })
             {
                 PopulateFormats();
+                PopulateQuality();
             }
         }
 
@@ -62,6 +66,16 @@ namespace MediaGrabber
             formatCombo.Items.AddRange(formats);
             formatCombo.SelectedIndex = 0;
             formatCombo.EndUpdate();
+        }
+
+        private void PopulateQuality()
+        {
+            var qualities = CurrentKind() == MediaKind.Audio ? AudioQualities : VideoQualities;
+            qualityCombo.BeginUpdate();
+            qualityCombo.Items.Clear();
+            qualityCombo.Items.AddRange(qualities);
+            qualityCombo.SelectedIndex = 0;
+            qualityCombo.EndUpdate();
         }
 
         private void BrowseButton_Click(object? sender, EventArgs e)
@@ -157,6 +171,7 @@ namespace MediaGrabber
                 Url = url,
                 Kind = CurrentKind(),
                 Format = (string)formatCombo.SelectedItem!,
+                Quality = (string)qualityCombo.SelectedItem!,
                 OutputFolder = outputFolderTextBox.Text,
             };
 
